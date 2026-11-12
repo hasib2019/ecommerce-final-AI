@@ -1,0 +1,1 @@
+<span class="relative inline-block leading-none tracking-[1px] {{ $size ?? 'text-xs' }}" aria-label="Rated {{ number_format($rating ?? 0, 1) }} out of 5"><span class="text-slate-300">★★★★★</span><span class="absolute inset-0 overflow-hidden whitespace-nowrap text-amber-400" style="width:{{ max(0, min(100, ($rating ?? 0) * 20)) }}%">★★★★★</span></span>

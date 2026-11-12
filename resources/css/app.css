@@ -1,0 +1,194 @@
+@import 'tailwindcss';
+
+@source '../views';
+@source '../../app';
+@source inline("{sm:,md:,lg:,xl:,}grid-cols-{1,2,3,4,5,6,7,8}");
+
+/*
+ * Brand tokens come from CSS variables printed in <head> from admin settings,
+ * so colours / font / radius change instantly without rebuilding assets.
+ */
+@theme {
+    --color-primary-50: color-mix(in oklab, var(--brand) 7%, white);
+    --color-primary-100: color-mix(in oklab, var(--brand) 14%, white);
+    --color-primary-200: color-mix(in oklab, var(--brand) 30%, white);
+    --color-primary-300: color-mix(in oklab, var(--brand) 50%, white);
+    --color-primary-400: color-mix(in oklab, var(--brand) 75%, white);
+    --color-primary-500: var(--brand);
+    --color-primary-600: color-mix(in oklab, var(--brand) 88%, black);
+    --color-primary-700: color-mix(in oklab, var(--brand) 74%, black);
+    --color-primary-800: color-mix(in oklab, var(--brand) 60%, black);
+    --color-primary-900: color-mix(in oklab, var(--brand) 45%, black);
+    --color-accent: var(--accent);
+    --color-accent-soft: color-mix(in oklab, var(--accent) 85%, white);
+
+    --font-sans: var(--font-body);
+
+    --radius-card: var(--radius);
+    --radius-btn: calc(var(--radius) * 0.75);
+
+    --animate-fade-in: fade-in 0.2s ease-out;
+    --animate-slide-up: slide-up 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    --animate-pop: pop 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slide-up {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pop {
+        0% { transform: scale(1); }
+        40% { transform: scale(1.25); }
+        100% { transform: scale(1); }
+    }
+}
+
+:root {
+    --brand: #d43d0b;
+    --accent: #0f172a;
+    --font-body: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --radius: 0.75rem;
+    color-scheme: light;
+}
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+        text-rendering: optimizeLegibility;
+    }
+    body {
+        @apply bg-slate-50 text-slate-800 antialiased;
+    }
+    [x-cloak] {
+        display: none !important;
+    }
+    img {
+        @apply max-w-full;
+    }
+    :focus-visible {
+        outline: 2px solid var(--brand);
+        outline-offset: 2px;
+    }
+}
+
+@layer components {
+    .container-x {
+        @apply mx-auto w-full max-w-7xl px-3 sm:px-4 lg:px-6;
+    }
+
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-btn px-5 py-2.5 text-sm font-semibold transition-all duration-150 select-none disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.98];
+    }
+    .btn-primary {
+        @apply bg-primary-500 text-white shadow-sm shadow-primary-500/30 hover:bg-primary-600;
+    }
+    .btn-dark {
+        @apply bg-accent text-white hover:opacity-90;
+    }
+    .btn-outline {
+        @apply border border-slate-300 bg-white text-slate-800 hover:border-primary-500 hover:text-primary-600;
+    }
+    .btn-ghost {
+        @apply text-slate-700 hover:bg-slate-100;
+    }
+    .btn-lg {
+        @apply px-6 py-3.5 text-base;
+    }
+    .btn-sm {
+        @apply px-3 py-1.5 text-xs;
+    }
+
+    .input {
+        @apply block w-full rounded-btn border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 focus:outline-none;
+    }
+    .input-error {
+        @apply border-rose-400 focus:border-rose-500 focus:ring-rose-500/15;
+    }
+    .label {
+        @apply mb-1.5 block text-sm font-medium text-slate-700;
+    }
+
+    .card {
+        @apply rounded-card border border-slate-200/80 bg-white;
+    }
+
+    .section-title {
+        @apply text-lg font-bold tracking-tight text-slate-900 sm:text-2xl;
+    }
+
+    .badge {
+        @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold leading-4;
+    }
+
+    /* Product card – extracted because it repeats dozens of times per page */
+    .pcard {
+        @apply relative flex h-full flex-col overflow-hidden rounded-card border border-slate-200/80 bg-white transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-900/5;
+    }
+    .pcard-media {
+        @apply relative block aspect-square overflow-hidden bg-slate-100;
+    }
+    .pcard-img {
+        @apply size-full object-cover transition duration-500;
+    }
+    .pcard-fab {
+        @apply grid size-8 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur transition hover:scale-110;
+    }
+    .pcard-title {
+        @apply line-clamp-2 min-h-[2.5rem] text-[13px] font-medium leading-5 text-slate-800 sm:text-sm;
+    }
+    .pcard-cta {
+        @apply inline-flex w-full items-center justify-center gap-1.5 rounded-btn border border-primary-500 px-3 py-2 text-xs font-semibold text-primary-600 transition select-none hover:bg-primary-500 hover:text-white active:scale-[0.98] disabled:opacity-60;
+    }
+    .row-item {
+        @apply w-[46%] shrink-0 snap-start sm:w-[31%] md:w-[23.5%];
+    }
+    .row-item-5 {
+        @apply lg:w-[18.8%];
+    }
+    .row-item-6 {
+        @apply lg:w-[18.8%] xl:w-[15.6%];
+    }
+
+    .prose-content {
+        @apply text-slate-700 leading-relaxed;
+    }
+    .prose-content h2 { @apply mt-8 mb-3 text-xl font-bold text-slate-900; }
+    .prose-content h3 { @apply mt-6 mb-2 text-lg font-semibold text-slate-900; }
+    .prose-content p { @apply my-3; }
+    .prose-content ul { @apply my-3 list-disc pl-6; }
+    .prose-content ol { @apply my-3 list-decimal pl-6; }
+    .prose-content li { @apply my-1; }
+    .prose-content a { @apply font-medium text-primary-600 underline underline-offset-2; }
+    .prose-content img { @apply my-4 rounded-card; }
+    .prose-content table { @apply my-4 w-full text-sm; }
+    .prose-content td, .prose-content th { @apply border border-slate-200 px-3 py-2 text-left; }
+    .prose-content blockquote { @apply my-4 border-l-4 border-primary-500 bg-primary-50 px-4 py-2 italic; }
+}
+
+@utility no-scrollbar {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@utility snap-row {
+    @apply flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar;
+    overscroll-behavior-x: contain;
+}
+
+/* Skeleton shimmer used while the cart drawer loads */
+@utility skeleton {
+    @apply animate-pulse rounded bg-slate-200;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
