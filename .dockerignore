@@ -1,0 +1,15 @@
+.env
+.git
+node_modules
+vendor
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/app/public/cache
+storage/app/public/livewire-tmp
+public/storage
+public/hot
+bootstrap/cache/*.php
+*.zip
+sale.md

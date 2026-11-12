@@ -31,3 +31,6 @@ Thumbs.db
 
 # Server-specific (cPanel writes its PHP handler here) – copy it to public_html by hand
 /.htaccess
+
+# Release archives
+/*.zip

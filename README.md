@@ -14,6 +14,8 @@ colours, fonts, payment methods, popups – is controlled from the admin panel.
 
 ---
 
+> **Full install guide (VPS / cPanel / Docker, SQL import, first admin, branding): [HowToSetup.md](HowToSetup.md)** · more docs in [`docs/`](docs/README.md)
+
 ## Quick start (local)
 
 ```bash
@@ -130,4 +132,3 @@ settings → storefront, product & home-section editing, order status actions an
 * **SMS notifications:** hook into `Order::booted()` (status changes) or `CheckoutService::notify()`
 * **Courier (Pathao / Steadfast):** add an action to `ViewOrder` header actions
 * Storefront text uses plain Blade – translate to Bangla by editing the views or wrapping strings in `__()`
-# ecoomerce-final-AI

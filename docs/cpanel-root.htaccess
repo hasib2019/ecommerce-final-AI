@@ -1,0 +1,34 @@
+# =============================================================================
+#  Copy to public_html/.htaccess – for hosts (cPanel) where the whole Laravel project
+#  sits inside public_html. Every request is forwarded into public/, so app/,
+#  config/, storage/, vendor/, .env … can never be reached from the web.
+#  Best option: point the domain's document root to /public (then this file
+#  is simply ignored).
+# =============================================================================
+
+# Sensitive files – denied anywhere in the tree, even if mod_rewrite is off.
+<FilesMatch "(?i)^(\.env.*|\.git.*|\.htaccess|\.htpasswd|\.user\.ini|php\.ini|error_log|composer\.(json|lock|phar)|package(-lock)?\.json|artisan|phpunit\.xml|vite\.config\.js|.*\.(sql|sqlite|log|sh|bak|old|orig|swp|dist|example|ini|ya?ml|md|zip|tar|gz|tgz|rar|7z))$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # SSL certificate validation files (cPanel AutoSSL / Let's Encrypt).
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^\.well-known/ - [L]
+
+    # Everything else is served from public/ – including /storage/… images,
+    # which live in public/storage (the storage:link symlink).
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Fail closed: without mod_rewrite the project root would be browsable.
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>
+
+
+# cPanel adds its "php -- BEGIN cPanel-generated handler" block below this line – keep it.
