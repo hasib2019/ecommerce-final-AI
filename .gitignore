@@ -28,3 +28,6 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Server-specific (cPanel writes its PHP handler here) – copy it to public_html by hand
+/.htaccess

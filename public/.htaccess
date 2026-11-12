@@ -5,6 +5,30 @@
 
     RewriteEngine On
 
+    # ------------------------------------------------------------- security
+    # (THE_REQUEST = the URL the visitor typed. REQUEST_URI can't be used:
+    #  the project-root .htaccess has already rewritten it to /public/….)
+
+    # /public/… typed directly → same page without "/public" (no duplicate site).
+    RewriteCond %{THE_REQUEST} ^[A-Z]+\s/public(?:/|(?=[\s?]))(\S*)\s [NC]
+    RewriteRule ^ /%1 [L,R=301,NE]
+
+    # Force HTTPS (behind Cloudflare / a proxy too). Local hosts are skipped.
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+    RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:[0-9]+)?$ [NC]
+    RewriteCond %{THE_REQUEST} ^[A-Z]+\s(/\S*)\s
+    RewriteRule !^\.well-known/ https://%{HTTP_HOST}%1 [L,R=301,NE]
+
+    # Hidden files and folders (.env, .git, .htaccess …) except .well-known.
+    RewriteRule (^|/)\.(?!well-known(/|$)) - [F]
+
+    # index.php is the only script allowed to run. Any other PHP / script file
+    # – e.g. a web shell planted in storage/ – is refused before PHP starts.
+    # (Also stops wp-login.php / xmlrpc.php scanners at no cost.)
+    RewriteRule ^(?!index\.php$).*\.(php[0-9]*|phtml|phar|pht|phps|cgi|pl|py|sh|asp|aspx|jsp)$ - [F,NC]
+
+    # -------------------------------------------------------------- Laravel
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -13,10 +37,10 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Redirect Trailing Slashes If Not A Folder...
+    # Redirect Trailing Slashes If Not A Folder... (one hop, query string kept)
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    RewriteCond %{THE_REQUEST} ^[A-Z]+\s(/\S*?)/+(\?\S*)?\s
+    RewriteRule ^ %1%2 [L,R=301,NE]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
@@ -24,7 +48,46 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
+Options -Indexes
+
+<FilesMatch "(?i)^(\.env.*|\.htaccess|\.user\.ini|error_log|.*\.(log|sql|bak|old|swp|ini))$">
+    Require all denied
+</FilesMatch>
+
+# ------------------------------------------------------------ security headers
+# Sent once for every response (pages, admin, images). The plain "unset"
+# removes the copy Laravel already added so the header never appears twice.
+<IfModule mod_headers.c>
+    Header unset X-Content-Type-Options
+    Header unset X-Frame-Options
+    Header unset Referrer-Policy
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), usb=()"
+    Header always set Content-Security-Policy "frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
+    Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
+
+    # Don't advertise the PHP version.
+    Header unset X-Powered-By
+    Header always unset X-Powered-By
+
+    # An uploaded SVG opened directly can't run scripts.
+    <FilesMatch "\.svg$">
+        Header always set Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'; img-src data:; sandbox"
+    </FilesMatch>
+</IfModule>
+
 # ---------------------------------------------------------------- performance
+# Some servers' mime.types lack these – without a type, browsers and the
+# cache rules below can't treat the files correctly.
+<IfModule mod_mime.c>
+    AddType image/webp .webp
+    AddType font/woff2 .woff2
+    AddType application/javascript .js .mjs
+    AddType image/svg+xml .svg
+</IfModule>
+
 # Compress text responses (HTML is ~10x smaller gzipped).
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/xml application/javascript application/json image/svg+xml

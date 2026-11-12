@@ -106,6 +106,10 @@ php artisan shop:warm-images
 ```
 
 * Enable **gzip/brotli**, **HTTP/2** and **OPcache** on the server (`public/.htaccess` already has Apache rules)
+* `public/.htaccess` also forces HTTPS, blocks hidden files and any PHP file except `index.php`, and sends security headers – make sure SSL is active first
+* **cPanel with the project inside `public_html`:** copy the project-root `.htaccess` to `public_html/.htaccess`
+  (it is git-ignored because cPanel writes its PHP-handler block into that file). It forwards everything into
+  `public/` – never block `/storage` there, that is where all images are served from
 * Point the document root to `/public`, use HTTPS, put Cloudflare in front for a free CDN
 * Change the demo admin password, set your logo / colours / contact info, then delete demo products if needed
 * Submit `https://your-domain.com/sitemap.xml` in Google Search Console
