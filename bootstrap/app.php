@@ -16,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleRedirects::class,
             \App\Http\Middleware\StorefrontHeaders::class,
         ]);
+        // Read by Apache on the ERP subdomain, so it must stay plain text.
+        $middleware->encryptCookies(except: ['gnw_erp_gate']);
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn () => route('account.index'));
     })

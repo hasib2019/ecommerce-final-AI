@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    // Gate for erp.gadgetnwatch.com: /dhaka sets this cookie, the ERP's .htaccess checks it.
+    'erp' => [
+        'url' => env('ERP_URL', 'https://erp.gadgetnwatch.com'),
+        'secret' => env('ERP_GATE_SECRET'),
+        'cookie_domain' => env('ERP_COOKIE_DOMAIN', '.gadgetnwatch.com'),
+        'minutes' => (int) env('ERP_GATE_MINUTES', 60),
+    ],
+
 ];

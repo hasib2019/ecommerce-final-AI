@@ -6,6 +6,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ErpGateController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PageController;
@@ -92,4 +93,7 @@ Route::get('/feed/products.xml', [SeoController::class, 'productFeed'])->name('f
 Route::get('/admin-tools/invoice/{order}', InvoiceController::class)->middleware('auth')->name('admin.invoice');
 
 // ---------------------------------------------------------------- CMS pages (keep last)
+// Only way into erp.gadgetnwatch.com (sets the gate cookie). Must stay above the CMS catch-all.
+Route::get('/dhaka', ErpGateController::class)->name('erp.gate');
+
 Route::get('/{page:slug}', [PageController::class, 'show'])->where('page', '[a-z0-9\-]+')->name('page.show');
